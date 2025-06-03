@@ -3,10 +3,10 @@
 // Specifies the database connection parameters.
 
 // --- Database Configuration ---
-$servername = "localhost"; // Usually 'localhost' if the database is on the same server.
-$username = "root";        // Your MySQL username (default is often 'root' for local development).
-$password = "";            // Your MySQL password (default is often empty for local development).
-$dbname = "pantri_arif_cleaned"; // The name of your database.
+$servername = "	sql105.iceiy.com"; // Usually 'localhost' if the database is on the same server.
+$username = "icei_39145233";        // Your MySQL username (default is often 'root' for local development).
+$password = "dENhOKl6VjJq";            // Your MySQL password (default is often empty for local development).
+$dbname = "icei_39145233_pantri_arif"; // The name of your database.
 
 // --- Create Connection ---
 // Create a new mysqli object to establish a connection.
