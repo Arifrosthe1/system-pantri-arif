@@ -653,23 +653,56 @@ while ($row = $result->fetch_assoc()) {
             form.submit();
         }
         
-        // Handle photo upload
-        document.getElementById('receiptPhoto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('photoPreview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    hasPhoto = true;
-                    
-                    // Update camera button text
-                    document.querySelector('.camera-btn').innerHTML = '<i class="fas fa-check me-2"></i>Photo Captured';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Handle photo upload with compression
+document.getElementById('receiptPhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const maxWidth = 800;
+            const scale = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(function(blob) {
+                const preview = document.getElementById('photoPreview');
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+
+                document.querySelector('.camera-btn').innerHTML = '<i class="fas fa-check me-2"></i>Photo Captured';
+                hasPhoto = true;
+
+                // OPTIONAL: Upload compressed image
+                uploadCompressedImage(blob);
+
+            }, 'image/jpeg', 0.7); // 70% quality
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+// Optional: Upload to server
+function uploadCompressedImage(blob) {
+    const formData = new FormData();
+    formData.append('receipt', blob, 'compressed.jpg');
+
+    fetch('upload.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.text())
+    .then(msg => console.log("✅ Upload success: " + msg))
+    .catch(err => console.error("❌ Upload failed:", err));
+}
+
         
         // Initialize the interface
         document.addEventListener('DOMContentLoaded', function() {
